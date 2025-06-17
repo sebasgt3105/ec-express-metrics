@@ -1,5 +1,5 @@
 const express = require('express');
-const fetch = require('node-fetch');
+const axios = require('axios');
 const cors = require('cors');
 const app = express();
 app.use(cors());
@@ -9,8 +9,8 @@ const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq
 
 app.get('/ventas', async (req, res) => {
   try {
-    const r = await fetch(SHEET_URL);
-    const text = await r.text();
+    const response = await axios.get(SHEET_URL, { timeout: 10000 });
+    const text = response.data;
     const jsonText = text.match(/google\.visualization\.Query\.setResponse\((.*)\);/s)[1];
     const json = JSON.parse(jsonText);
     const rows = json.table.rows.map(r => ({
